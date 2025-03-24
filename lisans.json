@@ -1,43 +1,10 @@
-def lisans_kontrol():
-    try:
-        response = requests.get(LISANS_URL)
-        if response.status_code == 200:
-            veri = json.loads(response.text)
-
-            if "lisanslar" not in veri:
-                print("Lisans dosyasında 'lisanslar' listesi bulunamadı.")
-                return False
-
-            eslesen = None
-            for l in veri["lisanslar"]:
-                if l["key"] == SISTEM_LISANS_KEY:
-                    eslesen = l
-                    break
-
-            if not eslesen:
-                print("Lisans anahtarı bulunamadı.")
-                return False
-            if not eslesen["aktif"]:
-                print("Lisans devre dışı bırakılmış.")
-                return False
-
-            baslangic = datetime.strptime(eslesen["baslangic"], "%Y-%m-%d")
-            bitis = datetime.strptime(eslesen["bitis"], "%Y-%m-%d")
-            bugun = datetime.now()
-
-            if bugun < baslangic:
-                print("Lisans henüz aktif değil. Başlangıç tarihi:", baslangic.strftime("%Y-%m-%d"))
-                return False
-            elif bugun > bitis:
-                print("Lisans süreniz dolmuştur. Lütfen bizimle iletişime geçin.")
-                return False
-            else:
-                kalan_gun = (bitis - bugun).days
-                print("Lisans doğrulandı. Kalan gün:", kalan_gun, "gün.")
-                return True
-        else:
-            print("Lisans kontrol sistemine ulaşılamadı.")
-            return False
-    except Exception as e:
-        print("Lisans kontrol hatası:", str(e))
-        return False
+{
+  "lisanslar": [
+    {
+      "key": "DEMO-KEMAL-9999-KEY-VER1",
+      "baslangic": "2025-03-24",
+      "bitis": "2025-04-15",
+      "aktif": true
+    }
+  ]
+}
