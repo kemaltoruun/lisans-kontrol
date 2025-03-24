@@ -3,15 +3,26 @@ def lisans_kontrol():
         response = requests.get(LISANS_URL)
         if response.status_code == 200:
             veri = json.loads(response.text)
-            if veri["key"] != SISTEM_LISANS_KEY:
-                print("Lisans anahtarı geçersiz.")
+
+            if "lisanslar" not in veri:
+                print("Lisans dosyasında 'lisanslar' listesi bulunamadı.")
                 return False
-            if not veri["aktif"]:
+
+            eslesen = None
+            for l in veri["lisanslar"]:
+                if l["key"] == SISTEM_LISANS_KEY:
+                    eslesen = l
+                    break
+
+            if not eslesen:
+                print("Lisans anahtarı bulunamadı.")
+                return False
+            if not eslesen["aktif"]:
                 print("Lisans devre dışı bırakılmış.")
                 return False
 
-            baslangic = datetime.strptime(veri["baslangic"], "%Y-%m-%d")
-            bitis = datetime.strptime(veri["bitis"], "%Y-%m-%d")
+            baslangic = datetime.strptime(eslesen["baslangic"], "%Y-%m-%d")
+            bitis = datetime.strptime(eslesen["bitis"], "%Y-%m-%d")
             bugun = datetime.now()
 
             if bugun < baslangic:
